@@ -1,0 +1,18 @@
+id
+name
+secondname
+address
+born
+dead
+gender
+treeid
+copyid
+
+id
+string name
+string owner
+string readers
+string editors
+bool search
+bool view
+
