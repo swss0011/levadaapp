@@ -79,13 +79,17 @@ class NodeNote(Base):
     view = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.datetime.now)
 
-
+"""
 class Human(Base):
     __tablename__ = 'human'
 
     id = Column(Integer, primary_key=True)
-    father_id = Column(Integer, ForeignKey('human.id'))
-    mother_id = Column(Integer, ForeignKey('human.id'))
+    father_id = Column(Integer, ForeignKey('human.id'), nullable=False)
+    mother_id = Column(Integer, ForeignKey('human.id'), nullable=False)
+
+    father = relationship("Human", foreign_keys=[father_id])
+    mother = relationship("Human", foreign_keys=[mother_id])
+
     children = relationship("Human")
     name: Column(String, default="")
     family_name: Column(String, default="")
@@ -94,3 +98,4 @@ class Human(Base):
     born_at = Column(DateTime)
     dead_at = Column(DateTime)
     created_at = Column(DateTime, default=datetime.datetime.now)
+"""

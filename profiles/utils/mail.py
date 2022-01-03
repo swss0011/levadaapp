@@ -4,8 +4,8 @@ import json
 url = 'https://api.mailjet.com/v3.1/send'
 verify_url = 'https://bonsai/login/verifyemail/'
 change_password_url = 'https://bonsai/user/changepasword/'
-api_key = '27ea4da336a9e2a7bb24acf2b7635636'
-api_secret = 'e1ae5bb1e0e66f7dc900d2f0813e5fb1'
+api_key = '540c3d704cbaeb778a70e106f9933375'
+api_secret = 'b14c008fb259d5927607030d51858539'
 
 headers = {
     'Content-Type': 'application/json',
@@ -15,13 +15,13 @@ payload = {
   "Messages": [
     {
       "From": {
-        "Email": "promptdev911@gmail.com",
-        "Name": "Edy"
+        "Email": "swss0011@gmail.com",
+        "Name": "RRR"
       },
       "To": [
         {
-          "Email": "ewalbach@gmail.com",
-          "Name": "Edy"
+          "Email": "swss0011@gmail.com",
+          "Name": "RRR"
         }
       ],
       "Subject": "Verification Email.",
@@ -46,9 +46,10 @@ async def send_email(email: str, linkTo: str, is_verification: bool = True):
 
             print("Status:", response.status)
             html = await response.text()
-            return response.status
-            #print("Content-type:", response.headers['content-type'])
 
-            #html = await response.text()
-            #print("Body:", html[:300], "...")
+            print("Content-type:", response.headers['content-type'])
+
+            html = await response.text()
+            print("Body:", html[:300], "...")
+            return response.status
 
