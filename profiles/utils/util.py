@@ -94,7 +94,7 @@ def check_change_password_exists(beginingOfSentence: str, changePassword: Query)
 
 def check_email_status(status_code: int, email: str):
     if status_code != 200:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Email to {email} with the link to change password was not sent')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Email to {email} with the link to change password was not sent')
 
 
 def check_expiration(timeString: str):

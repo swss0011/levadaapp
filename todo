@@ -1,0 +1,5 @@
+* желательно
+- заменить библиотеку по рассылке почты с fastapi_mail на fastapi mail man  https://marktennyson.github.io/fastapi-mailman/
+
+* потрібно
+- зберігати назви дерев
