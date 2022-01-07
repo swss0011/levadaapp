@@ -67,10 +67,9 @@ def create(request: schemas.Tree, db: Session, current_user_email: str):
 
     util.check_user_is_verified(user.is_verified)
 
-    person_exists = False
+    tree = db.query(models.TreeDb).filter(models.TreeDb.name == request.name, models.TreeDb.owner == logged_in_user_id)
+    util.check_tree_exists(tree)
 
-    if person_exists:
-        raise HTTPException(status_code=400, detail="USERNAME_TAKEN")
 
     new_tree = models.TreeDb(
         name=request.name,

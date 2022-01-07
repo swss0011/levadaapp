@@ -60,6 +60,10 @@ def check_user_not_found_in_email_verification(user: Query):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'User not found!!!')
 
 
+def check_tree_exists(tree: Query):
+    if tree.first():
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Tree with name provided already exists')
+
 def check_user_exists(user: Query, email: str):
     if user.first():
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'User with {email} already exists')
