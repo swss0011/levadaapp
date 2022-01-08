@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from profiles import models, schemas
 from sqlalchemy.orm import Session
+from sqlalchemy import literal
 from profiles.utils import util
 
 
@@ -47,25 +48,54 @@ def update(id, request: schemas.TreePut, db: Session, current_user_email: str):
     util.check_tree_exists_by_id(trees_by_name, id)
 
 
-
-    print(request)
-
     if hasattr(request, 'notes'):
         if request.notes:
-            tree.update({
-                'name': request.name,
-                'notes': request.notes,
-                'search': request.search,
-                'view': request.view
-            })
+            if not request.name:
+                tree.update({
+                    'notes': request.notes,
+                    'search': request.search,
+                    'view': request.view
+                })
+            else:
+                tree.update({
+                    'name': request.name,
+                    'notes': request.notes,
+                    'search': request.search,
+                    'view': request.view
+                })
         else:
-            tree.update({
-                'name': request.name,
-                'search': request.search,
-                'view': request.view
-            })
+            if not request.name:
+                tree.update({
+                    'search': request.search,
+                    'view': request.view
+                })
+            else:
+                tree.update({
+                    'name': request.name,
+                    'search': request.search,
+                    'view': request.view
+                })
+
     db.commit()
     return {'msg': 'Done!!!'}
+
+def find_and_search(request: schemas.TreeFindSearch, db: Session):
+    tree = []
+
+    if request.view == True and request.search == False:
+        tree = db.query(models.TreeDb).filter(models.TreeDb.view == True, models.TreeDb.name.contains(request.text))
+
+    if request.view == False and request.search == True:
+        tree = db.query(models.TreeDb).filter(models.TreeDb.search == True, models.TreeDb.name.contains(request.text))
+
+    if request.view == True and request.search == True:
+        tree = db.query(models.TreeDb).filter(models.TreeDb.view == True, models.TreeDb.search == True, models.TreeDb.name.contains(request.text))
+
+    if request.view == False and request.search == False:
+        return tree
+
+    return tree.all()
+
 
 
 def create(request: schemas.Tree, db: Session, current_user_email: str):

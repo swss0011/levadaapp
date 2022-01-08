@@ -30,5 +30,9 @@ def desroy(id, db: Session = Depends(get_db), current_user_email: str = Depends(
     return tree.destroy(id, current_user_email, db)
 
 @router.put('/{id}', status_code=status.HTTP_202_ACCEPTED)
-def update(id, request: schemas.Tree, db: Session = Depends(get_db), current_user_email: str = Depends(oauth2.get_current_user)):
+def update(id, request: schemas.TreePut, db: Session = Depends(get_db), current_user_email: str = Depends(oauth2.get_current_user)):
     return tree.update(id, request, db, current_user_email)
+
+@router.post('/search_find', status_code=status.HTTP_200_OK)
+def search_and_find(request: schemas.TreeFindSearch, db: Session = Depends(get_db)):
+    return tree.find_and_search(request, db)

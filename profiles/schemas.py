@@ -87,6 +87,11 @@ class TreePut(BaseModel):
     notes: Optional[str] = ""
     view: Optional[bool] = False
 
+class TreeFindSearch(BaseModel):
+    text: str
+    search: Optional[bool] = True
+    view: Optional[bool] = False
+
 
 class NodeNote(BaseModel):
     text: Optional[str] = ""

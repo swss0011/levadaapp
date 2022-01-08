@@ -1,5 +1,7 @@
 * желательно
 - заменить библиотеку по рассылке почты с fastapi_mail на fastapi mail man  https://marktennyson.github.io/fastapi-mailman/
+- elasticsearch ua ru en etc
+
 
 * потрібно
 - зберігати назви дерев
