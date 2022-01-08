@@ -34,7 +34,7 @@ def destroy(id, current_user_email: str, db: Session):
     return {'msg': 'Done!!!'}
 
 
-def update(id, request: schemas.Tree, db: Session, current_user_email: str):
+def update(id, request: schemas.TreePut, db: Session, current_user_email: str):
     user = util.get_loginned_user(db, current_user_email)
     lined_user_id = user.id
 
@@ -42,6 +42,13 @@ def update(id, request: schemas.Tree, db: Session, current_user_email: str):
 
     tree = db.query(models.TreeDb).filter(models.TreeDb.id == id, models.TreeDb.owner == lined_user_id)
     util.tree_not_found("Tree", tree, id)
+
+    trees_by_name = db.query(models.TreeDb).filter(models.TreeDb.name == request.name, models.TreeDb.owner == lined_user_id)
+    util.check_tree_exists_by_id(trees_by_name, id)
+
+
+
+    print(request)
 
     if hasattr(request, 'notes'):
         if request.notes:
@@ -51,12 +58,12 @@ def update(id, request: schemas.Tree, db: Session, current_user_email: str):
                 'search': request.search,
                 'view': request.view
             })
-    else:
-        tree.update({
-            'name': request.name,
-            'search': request.search,
-            'view': request.view
-        })
+        else:
+            tree.update({
+                'name': request.name,
+                'search': request.search,
+                'view': request.view
+            })
     db.commit()
     return {'msg': 'Done!!!'}
 

@@ -64,6 +64,13 @@ def check_tree_exists(tree: Query):
     if tree.first():
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Tree with name provided already exists')
 
+def check_tree_exists_by_id(tree: Query, id: str):
+    if tree.first():
+        tree_by_name = tree.first()
+
+        if int(id) != int(tree_by_name.id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Tree with name provided already exists')
+
 def check_user_exists(user: Query, email: str):
     if user.first():
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'User with {email} already exists')
