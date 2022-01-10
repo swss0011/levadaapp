@@ -64,6 +64,29 @@ def check_tree_exists(tree: Query):
     if tree.first():
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Tree with name provided already exists')
 
+def check_tree_not_exist(tree: Query):
+    if not tree.first():
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Tree with name provided does not exist')
+
+def compare_owner_and_rw_ids(id: str, tree: Query):
+    local_tree = tree.first()
+
+    if local_tree.owner == int(id):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'User is the owner of this tree')
+
+def contains_id_in_rwusers(id: str, status_rw: str, tree: Query):
+    local_tree = tree.first()
+    li = []
+
+    if status_rw == 'editor':
+        li = list(local_tree.editors.split(","))
+
+    if status_rw == 'reader':
+        li = list(local_tree.readers.split(","))
+
+    if id in li:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'User exists in list')
+
 def check_tree_exists_by_id(tree: Query, id: str):
     if tree.first():
         tree_by_name = tree.first()

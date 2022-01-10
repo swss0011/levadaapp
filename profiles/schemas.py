@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Literal
 from pydantic import BaseModel
 
 
@@ -86,6 +86,15 @@ class TreePut(BaseModel):
     search: Optional[bool] = False
     notes: Optional[str] = ""
     view: Optional[bool] = False
+
+class TreeEditorsReaders(BaseModel):
+    status: Literal['reader', 'editor']
+    tree_id: str
+    id: str
+
+class TreeEditorsReadersView(BaseModel):
+    status: Literal['reader', 'editor']
+    tree_id: str
 
 class TreeFindSearch(BaseModel):
     text: str
