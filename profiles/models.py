@@ -26,6 +26,8 @@ class User(Base):
     password = Column(String)
     email = Column(String)
     role = Column(String, default="user")
+    reader = Column(String, default="")
+    editor = Column(String, default="")
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.datetime.now)
