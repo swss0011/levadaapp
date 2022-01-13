@@ -19,7 +19,7 @@ def create(request: schemas.TreeEditorsReaders, db: Session = Depends(get_db),
            current_user_email: str = Depends(oauth2.get_current_user)):
     return rw_for_tree.create(request, db, current_user_email)
 
-@router.post('/delete', status_code=status.HTTP_204_NO_CONTENT)
+@router.post('/delete', status_code=status.HTTP_200_OK)
 def desroy(request: schemas.TreeEditorsReaders, db: Session = Depends(get_db),
            current_user_email: str = Depends(oauth2.get_current_user)):
     return rw_for_tree.destroy(request, db, current_user_email)

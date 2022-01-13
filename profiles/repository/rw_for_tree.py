@@ -36,10 +36,10 @@ def delete(id: str, status_rw: str, db: Session, tree: Query, user_rw: Query):
         li = list(local_tree.editors.split(","))
         li_rw_editors = list(user_rw_found.editor.split(","))
         print(li)
-        if find_in_rw(li_rw_editors, local_tree.id):
-            li_rw_editors.remove(local_tree.id)
+        if find_in_rw(li_rw_editors, str(local_tree.id)):
+            li_rw_editors.remove(str(local_tree.id))
             user_rw.update({
-                'editor': ','.join(str(e) for e in li)
+                'editor': ','.join(str(e) for e in li_rw_editors)
             })
             db.commit()
         if find_in_rw(li, id):
@@ -55,10 +55,13 @@ def delete(id: str, status_rw: str, db: Session, tree: Query, user_rw: Query):
         li = list(local_tree.readers.split(","))
         li_rw_readers = list(user_rw_found.reader.split(","))
         print(li)
-        if find_in_rw(li_rw_readers, local_tree.id):
-            li_rw_readers.remove(local_tree.id)
+        print(f"1 li_rw_readers = {li_rw_readers}")
+        print(f"local_tree.id = {local_tree.id}")
+        if find_in_rw(li_rw_readers, str(local_tree.id)):
+            li_rw_readers.remove(str(local_tree.id))
+            print(f"2 li_rw_readers = {li_rw_readers}")
             user_rw.update({
-                'reader': ','.join(str(e) for e in li)
+                'reader': ','.join(str(e) for e in li_rw_readers)
             })
             db.commit()
         if find_in_rw(li, id):
@@ -144,7 +147,7 @@ def create(request: schemas.TreeEditorsReaders, db: Session, current_user_email:
 
         li_rw_editor = list(user_rw_found.editor.split(","))
         li_rw_editor.append(request.tree_id)
-        tree.update({
+        user_rw.update({
             'editor': ','.join(str(e) for e in li_rw_editor)
         })
 
@@ -160,7 +163,7 @@ def create(request: schemas.TreeEditorsReaders, db: Session, current_user_email:
 
         li_rw_reader = list(user_rw_found.reader.split(","))
         li_rw_reader.append(request.tree_id)
-        tree.update({
+        user_rw.update({
             'reader': ','.join(str(e) for e in li_rw_reader)
         })
 
