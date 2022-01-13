@@ -3,6 +3,7 @@ from profiles import models, schemas
 from sqlalchemy.orm import Session
 from sqlalchemy import literal
 from profiles.utils import util
+from . import helper
 
 
 def get_all(db: Session):
@@ -48,7 +49,8 @@ def update(id, request: schemas.TreePut, db: Session, current_user_email: str):
     util.check_tree_exists_by_id(trees_by_name, id)
 
 
-    if hasattr(request, 'notes'):
+    """
+        if hasattr(request, 'notes'):
         if request.notes:
             if not request.name:
                 tree.update({
@@ -77,6 +79,10 @@ def update(id, request: schemas.TreePut, db: Session, current_user_email: str):
                 })
 
     db.commit()
+    """
+
+    helper.update_tree(db, request, tree)
+
     return {'msg': 'Done!!!'}
 
 def find_and_search(request: schemas.TreeFindSearch, db: Session):

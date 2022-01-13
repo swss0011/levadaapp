@@ -87,6 +87,17 @@ class TreePut(BaseModel):
     notes: Optional[str] = ""
     view: Optional[bool] = False
 
+class TreeForEditor(BaseModel):
+    tree_id: str
+    name: str
+    search: Optional[bool] = False
+    notes: Optional[str] = ""
+    view: Optional[bool] = False
+
+class ShowTreeForRW(BaseModel):
+    tree_ids: str
+    status: Literal['reader', 'editor']
+
 class TreeEditorsReaders(BaseModel):
     status: Literal['reader', 'editor']
     tree_id: str

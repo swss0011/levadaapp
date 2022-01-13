@@ -36,13 +36,13 @@ def delete(id: str, status_rw: str, db: Session, tree: Query, user_rw: Query):
         li = list(local_tree.editors.split(","))
         li_rw_editors = list(user_rw_found.editor.split(","))
         print(li)
-        if find_in_rw(li_rw_editors, str(local_tree.id)):
+        if util.find_in_rw(li_rw_editors, str(local_tree.id)):
             li_rw_editors.remove(str(local_tree.id))
             user_rw.update({
                 'editor': ','.join(str(e) for e in li_rw_editors)
             })
             db.commit()
-        if find_in_rw(li, id):
+        if util.find_in_rw(li, id):
             print('in editor found')
             li.remove(id)
             tree.update({
@@ -57,14 +57,14 @@ def delete(id: str, status_rw: str, db: Session, tree: Query, user_rw: Query):
         print(li)
         print(f"1 li_rw_readers = {li_rw_readers}")
         print(f"local_tree.id = {local_tree.id}")
-        if find_in_rw(li_rw_readers, str(local_tree.id)):
+        if util.find_in_rw(li_rw_readers, str(local_tree.id)):
             li_rw_readers.remove(str(local_tree.id))
             print(f"2 li_rw_readers = {li_rw_readers}")
             user_rw.update({
                 'reader': ','.join(str(e) for e in li_rw_readers)
             })
             db.commit()
-        if find_in_rw(li, id):
+        if util.find_in_rw(li, id):
             print('in reader found')
             li.remove(id)
             tree.update({
@@ -72,9 +72,11 @@ def delete(id: str, status_rw: str, db: Session, tree: Query, user_rw: Query):
             })
             db.commit()
 
-
+"""
 def find_in_rw(li, id: str):
     return id in li
+"""
+
 
 
 def destroy(request: schemas.TreeEditorsReaders, db: Session, current_user_email: str):
@@ -136,7 +138,7 @@ def create(request: schemas.TreeEditorsReaders, db: Session, current_user_email:
     user_rw_found = user_rw.first()
 
     if request.status == 'editor':
-        if find_in_rw(list(local_tree.readers.split(",")), request.id):
+        if util.find_in_rw(list(local_tree.readers.split(",")), request.id):
             delete(request.id, 'reader', db, tree, user_rw)
         li = list(local_tree.editors.split(","))
         li.append(request.id)
@@ -153,7 +155,7 @@ def create(request: schemas.TreeEditorsReaders, db: Session, current_user_email:
 
 
     if request.status == 'reader':
-        if find_in_rw(list(local_tree.editors.split(",")), request.id):
+        if util.find_in_rw(list(local_tree.editors.split(",")), request.id):
             delete(request.id, 'editor', db, tree, user_rw)
         li = list(local_tree.readers.split(","))
         li.append(request.id)
