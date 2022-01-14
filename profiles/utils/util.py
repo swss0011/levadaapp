@@ -68,6 +68,7 @@ def check_user_is_editor(id: str, tree: Query):
     local_tree = tree.first()
 
     li = list(local_tree.editors.split(","))
+
     res = find_in_list(li, id)
     if not res:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'User can not edit the tree (name = {local_tree.name})')
@@ -75,11 +76,12 @@ def check_user_is_editor(id: str, tree: Query):
 def find_in_rw(li, id: str):
     return id in li
 
-def find_in_list(id, li):
-    for item in li:
-        if item:
-            if int(item) == int(id):
-                return True
+def find_in_list(li, id):
+    li_str = list(map(int,filter(None,li)))
+
+    for item in li_str:
+        if item == int(id):
+            return True
     return False
 
 def check_tree_not_exist(tree: Query):
