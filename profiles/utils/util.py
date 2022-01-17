@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 from . import random_code, mail
 from datetime import datetime, timedelta
 from dateutil import parser
+import re
+from re import match
 
 
 def get_loginned_user(db: Session, email: str):
@@ -63,6 +65,24 @@ def check_user_not_found_in_email_verification(user: Query):
 def check_tree_exists(tree: Query):
     if tree.first():
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Tree with name provided already exists')
+
+def check_re_match(date_str):
+    pattern = r'^((?P<day>0[1-9]|[12][0-9]|3[01])[.](?P<month>0[1-9]|1[012])[.])?(?P<year>111[0-9]|11[2-9]\d|12\d\d|13\d\d|14\d\d|15\d\d|16\d\d|17\d\d|18\d\d|19\d\d|2\d{3}|30[0-3]\d|304[0-8])$'
+    date_regex = re.compile(pattern)
+    match = date_regex.search(date_str)
+    valid = False
+    if match:
+        return True
+    return valid
+
+def check_4_dates(born_from, born_to, end_from, end_to):
+    if not check_re_match(born_from) and not check_re_match(born_to) and not check_re_match(end_from) and not check_re_match(end_to):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'At least one date needs to contain year or date (day.mont.year or year. For example: 30.12.2000; 2000). Now all 4 dates are not correct')
+
+def check_date(any_date):
+    if not check_re_match(any_date):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Needs to contain year or date (day.mont.year or year. For example: 30.12.2000; 2000). Now all 4 dates are not correct')
+
 
 def check_user_is_editor(id: str, tree: Query):
     local_tree = tree.first()

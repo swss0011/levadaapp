@@ -129,3 +129,42 @@ class Human(BaseModel):
     place: Optional[str] = ""
     born_at: str
     dead_at: Optional[str] = ""
+
+class Person(BaseModel):
+    owner_id: str
+    tree_id: str
+    created_by: str
+    copy_from_person: Optional[str] = ""
+    node_from_neo4j_id: str
+    sex: Literal['male', 'female']
+    name: str
+    second_name: Optional[str] = ""
+    father_name: Optional[str] = ""
+    date_of_birth_from: str
+    date_of_birth_to: str
+    date_of_death_from: Optional[str] = ""
+    date_of_death_to: Optional[str] = ""
+    is_active: Optional[bool] = True
+    note: Optional[str] = ""
+    location: str
+    note_markdown: Optional[str] = ""
+    mother_id: Optional[str] = ""
+    father_id: Optional[str] = ""
+    children_ids: Optional[str] = ""
+    image: Optional[str] = ""
+
+class PersonCreate(BaseModel):
+    tree_id: int
+    sex: Literal['male', 'female']
+    name: str
+    second_name: Optional[str] = ""
+    father_name: Optional[str] = ""
+    date_of_birth_from: str
+    date_of_birth_to: str
+    date_of_death_from: Optional[str] = ""
+    date_of_death_to: Optional[str] = ""
+    is_active: Optional[bool] = True
+    note: Optional[str] = ""
+    location: str
+    note_markdown: Optional[str] = ""
+    image: Optional[str] = ""

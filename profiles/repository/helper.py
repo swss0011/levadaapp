@@ -2,6 +2,13 @@ from profiles import schemas
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.query import Query
 from profiles.utils import util
+import re
+from re import match
+
+def check_owner_of_tree(id: str, tree: Query):
+    local_tree = tree.first()
+
+    return local_tree.owner == int(id)
 
 def tree_exists(tree: Query):
     return tree.first()

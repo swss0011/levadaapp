@@ -81,6 +81,35 @@ class NodeNote(Base):
     view = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.datetime.now)
 
+
+class Person(Base):
+    __tablename__ = "person"
+
+    id = Column(Integer, primary_key=True, index=True)
+    owner_id = Column(Integer)
+    tree_id = Column(Integer)
+    created_by = Column(Integer)
+    copy_from_person = Column(Integer, default=0)
+    node_from_neo4j_id = Column(Integer)
+    sex = Column(String)
+    name = Column(String)
+    second_name = Column(String, default="")
+    father_name = Column(String, default="")
+    date_of_birth_from = Column(String)
+    date_of_birth_to = Column(String)
+    date_of_death_from = Column(String, default="")
+    date_of_death_to = Column(String, default="")
+    is_active = Column(Boolean, default=True)
+    location = Column(String, default="")
+    note = Column(String, default="")
+    note_markdown = Column(String, default="")
+    mother_id = Column(Integer, default=0)
+    father_id = Column(Integer, default=0)
+    children_ids = Column(String, default="")
+    image = Column(String, default="")
+
+
+
 """
 class Human(Base):
     __tablename__ = 'human'
