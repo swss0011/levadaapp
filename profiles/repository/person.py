@@ -71,17 +71,48 @@ def create(request: schemas.PersonCreate, db: Session, current_user_email: str):
 
     util.check_4_dates(request.date_of_birth_from, request.date_of_birth_to, request.date_of_death_from, request.date_of_death_to)
 
+    date_of_birth_from = ""
+    date_of_birth_to = ""
+    date_of_death_from = ""
+    date_of_death_to = ""
+
+    count_birth = 0
+    count_death = 0
+
     if request.date_of_birth_from:
         util.check_date(request.date_of_birth_from)
+        date_of_birth_from = helper.get_date(request.date_of_birth_from)
+        count_birth += 1
 
     if request.date_of_birth_to:
         util.check_date(request.date_of_birth_to)
+        date_of_birth_to = helper.get_date(request.date_of_birth_to)
+        count_birth += 1
 
     if request.date_of_death_from:
         util.check_date(request.date_of_death_from)
+        date_of_death_from = helper.get_date(request.date_of_death_from)
+        count_death += 1
 
     if request.date_of_death_to:
         util.check_date(request.date_of_death_to)
+        date_of_death_to = helper.get_date(request.date_of_death_to)
+        count_death += 1
+
+    if count_birth == 1:
+        if len(date_of_birth_from) > 1:
+            date_of_birth_to = date_of_birth_from
+        else:
+            date_of_birth_from = date_of_birth_to
+
+    if count_death == 1:
+        if len(date_of_death_from) > 1:
+            date_of_death_to = date_of_death_from
+        else:
+            date_of_death_from = date_of_death_to
+
+    if count_death > 0 and count_death > 0:
+        util.compare_dates(date_of_birth_to, date_of_death_from)
 
 
     #NEO4J!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -96,10 +127,10 @@ def create(request: schemas.PersonCreate, db: Session, current_user_email: str):
         name = request.name,
         second_name = request.second_name,
         father_name = request.father_name,
-        date_of_birth_from = request.date_of_birth_from,
-        date_of_birth_to = request.date_of_birth_to,
-        date_of_death_from = request.date_of_death_from,
-        date_of_death_to = request.date_of_death_to,
+        date_of_birth_from = date_of_birth_from,
+        date_of_birth_to = date_of_birth_to,
+        date_of_death_from = date_of_death_from,
+        date_of_death_to = date_of_death_to,
         is_active = request.is_active,
         location = request.location,
         note = request.note,

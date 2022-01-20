@@ -5,6 +5,24 @@ from profiles.utils import util
 import re
 from re import match
 
+def get_date(date_str):
+    pattern = r'^((?P<day>0[1-9]|[12][0-9]|3[01])[.](?P<month>0[1-9]|1[012])[.])?(?P<year>111[0-9]|11[2-9]\d|12\d\d|13\d\d|14\d\d|15\d\d|16\d\d|17\d\d|18\d\d|19\d\d|2\d{3}|30[0-3]\d|304[0-8])$'
+    date_regex = re.compile(pattern)
+    match = date_regex.search(date_str)
+    day = 0
+    month = 0
+    year = 0
+    if match:
+        year = int(match.group("year"))
+        if type(match.group("day")) is str and type(match.group("month")) is str:
+            day = int(match.group("day"))
+            month = int(match.group("month"))
+        else:
+            day = 1
+            month = 1
+
+    return f"{day}.{month}.{year}"
+
 def check_owner_of_tree(id: str, tree: Query):
     local_tree = tree.first()
 

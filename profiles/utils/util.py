@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from dateutil import parser
 import re
 from re import match
+import time
 
 
 def get_loginned_user(db: Session, email: str):
@@ -74,6 +75,12 @@ def check_re_match(date_str):
     if match:
         return True
     return valid
+
+def compare_dates(date1, date2):
+    if time.strptime(date1, "%d.%m.%Y") > time.strptime(date2, "%d.%m.%Y"):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail=f'Date of birth needs to be smaller then date of death')
+
 
 def check_4_dates(born_from, born_to, end_from, end_to):
     if not check_re_match(born_from) and not check_re_match(born_to) and not check_re_match(end_from) and not check_re_match(end_to):
