@@ -11,3 +11,15 @@
 + только при "Удалении" ERROR:    Exception in ASGI application
 - для дерева коли працюють рідери або едітори id поміняти на user_id
 - треба буде з'єднатися з графовою БД, і для create потрібна вся логіка взаємодії з графовою БД (що зберегти ноду)
+- close neo4j connection
+- reise exception for neo4j
+
+
+
+
+
+
+NOTES:
+MATCH (p:Person) where ID(p)=1
+OPTIONAL MATCH (p)-[r]-() //drops p's relations
+DELETE r,p

@@ -12,10 +12,12 @@ router = APIRouter(
 
 get_db = db.get_db
 
+get_neo4j = db.get_neo4j()
+
 @router.post('/', status_code=status.HTTP_201_CREATED)
 def create(request: schemas.PersonCreate, db: Session = Depends(get_db),
            current_user_email: str = Depends(oauth2.get_current_user)):
-    return person.create(request, db, current_user_email)
+    return person.create(request, db, current_user_email, get_neo4j)
 
 
 @router.get('/', status_code=status.HTTP_200_OK)

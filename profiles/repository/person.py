@@ -48,7 +48,7 @@ def update(id, request: schemas.Person, db: Session, current_user_email: str):
     return {'msg': 'Done!!!'}
 
 
-def create(request: schemas.PersonCreate, db: Session, current_user_email: str):
+def create(request: schemas.PersonCreate, db: Session, current_user_email: str, get_neo4j):
     user = util.get_loginned_user(db, current_user_email)
     logged_in_user_id = user.id
 
@@ -116,13 +116,17 @@ def create(request: schemas.PersonCreate, db: Session, current_user_email: str):
 
 
     #NEO4J!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    is_male = True
+    if request.sex == "female":
+        is_male = False
+    neo4j_id = get_neo4j.create_person(f"{request.second_name} {request.name} {request.father_name}", is_male)
 
 
     new_person = models.Person(
         owner_id = owner_id,
         tree_id = request.tree_id,
         created_by = created_by,
-        node_from_neo4j_id = 1111111111111111111111111111111111111111111111111111111111111111,
+        node_from_neo4j_id = neo4j_id,
         sex = request.sex,
         name = request.name,
         second_name = request.second_name,
