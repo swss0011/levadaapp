@@ -6,6 +6,7 @@ from dotenv import dotenv_values
 from neo4j import GraphDatabase
 import logging
 from neo4j.exceptions import ServiceUnavailable
+from fastapi import status, HTTPException
 
 class App:
 
@@ -31,6 +32,36 @@ class App:
 
             return res_for_sql
 
+    def delete_person(self, id, male=True):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._delete_person, id, male)
+
+    @staticmethod
+    def _delete_person(tx, id, is_male):
+        query = ""
+        if is_male:
+            query = (
+                f"MATCH (p:Male) where ID(p)=$id"
+                "OPTIONAL MATCH (p)-[r]-()"
+                "DELETE r,p"
+            )
+        else:
+            query = (
+                f"MATCH (p:Female) where ID(p)=$id"
+                "OPTIONAL MATCH (p)-[r]-()"
+                "DELETE r,p"
+            )
+
+
+        try:
+            result = tx.run(query, id=id)
+        # Capture any errors along with the query and data for traceability
+        except ServiceUnavailable as exception:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="{query} raised an error: \n {exception}".format(
+                                    query=query, exception=exception))
+
     @staticmethod
     def _create_and_return_person(tx, person1_name, is_male):
         # To learn more about the Cypher syntax, see https://neo4j.com/docs/cypher-manual/current/
@@ -46,15 +77,15 @@ class App:
                 "CREATE (p1:Female { name: $person1_name }) "
                 "RETURN ID(p1)"
             )
-        result = tx.run(query, person1_name=person1_name)
+
         try:
+            result = tx.run(query, person1_name=person1_name)
             return [{"p1": row["ID(p1)"]}
                     for row in result]
         # Capture any errors along with the query and data for traceability
         except ServiceUnavailable as exception:
-            logging.error("{query} raised an error: \n {exception}".format(
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="{query} raised an error: \n {exception}".format(
                 query=query, exception=exception))
-            raise
 
 
 config_credentials = dotenv_values(".env")
@@ -84,3 +115,5 @@ def get_db():
         yield db
     finally:
         db.close()
+        if neo4j_app:
+            neo4j_app.close()

@@ -13,7 +13,8 @@
 - треба буде з'єднатися з графовою БД, і для create потрібна вся логіка взаємодії з графовою БД (що зберегти ноду)
 - close neo4j connection
 - reise exception for neo4j
-
+- if tree is deleted -> delete all tree's nodes
+- neo4j change name
 
 
 

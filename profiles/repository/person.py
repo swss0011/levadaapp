@@ -5,44 +5,171 @@ from profiles.hashing import Hash
 from fastapi import HTTPException
 from . import helper
 
-def show(current_user_email: str, db: Session):
+def show(tree_id, current_user_email: str, db: Session):
     user = util.get_loginned_user(db, current_user_email)
-    lined_user_id = user.id
+    logged_in_user_id = user.id
 
     util.check_user_is_verified(user.is_verified)
 
-    nodeInfo = db.query(models.Person).filter(models.Person.owner == lined_user_id)
+    tree = db.query(models.TreeDb).filter(models.TreeDb.id == tree_id)
+    util.tree_not_found("Tree", tree, tree_id)
 
-    return nodeInfo.all()
+    local_tree = tree.first()
+
+    util.can_reader_nodes(
+        helper.check_owner_of_tree(logged_in_user_id, tree),
+        helper.is_editor(logged_in_user_id, tree),
+        helper.is_reader(logged_in_user_id, tree),
+        tree)
+
+    nodes = db.query(models.Person).filter(models.Person.tree_id == tree_id)
+
+    return nodes.all()
 
 
-def destroy(id, current_user_email: str, db: Session):
+def destroy(id, current_user_email: str, db: Session, get_neo4j):
     user = util.get_loginned_user(db, current_user_email)
-    lined_user_id = user.id
+    logged_in_user_id = user.id
 
     util.check_user_is_verified(user.is_verified)
 
-    nodeInfo = db.query(models.Person).filter(models.Person.id == id, models.Person.owner == lined_user_id)
-    util.node_info_not_found("Node info", nodeInfo, id)
+    person = db.query(models.Person).filter(models.Person.id == id)
+    util.person_not_found("Person", person, id)
 
-    nodeInfo.delete(synchronize_session=False)
-    db.commit()
+    local_person = person.first()
+    tree_id = local_person.tree_id
+
+    tree = db.query(models.TreeDb).filter(models.TreeDb.id == tree_id)
+    util.tree_not_found("Tree", tree, tree_id)
+
+    local_tree = tree.first()
+
+    util.can_delete_node(
+        helper.check_owner_of_tree(logged_in_user_id, tree),
+        helper.is_editor(logged_in_user_id, tree),
+        tree)
+
+    helper.delete_person(person, local_person, get_neo4j, db)
+
     return {'msg': 'Done!!!'}
 
 
-def update(id, request: schemas.Person, db: Session, current_user_email: str):
+def update(id, request: schemas.PersonUpdate, db: Session, current_user_email: str):
     user = util.get_loginned_user(db, current_user_email)
-    lined_user_id = user.id
+    logged_in_user_id = user.id
 
     util.check_user_is_verified(user.is_verified)
 
-    nodeInfo = db.query(models.Person).filter(models.Person.id == id, models.Person.owner == lined_user_id)
-    util.node_info_not_found("Node info", nodeInfo, id)
+    person = db.query(models.Person).filter(models.Person.id == id)
+    util.person_not_found("Person", person, id)
 
-    nodeInfo.update({
-        'text': request.text,
-        'search': request.search,
-        'view': request.view
+    local_person = person.first()
+    tree_id = local_person.tree_id
+
+    tree = db.query(models.TreeDb).filter(models.TreeDb.id == tree_id)
+    util.tree_not_found("Tree", tree, tree_id)
+
+    owner_id = ""
+    created_by = ""
+    is_life = request.is_active
+
+    local_tree = tree.first()
+
+    if helper.check_owner_of_tree(logged_in_user_id, tree):
+        owner_id = logged_in_user_id
+        created_by = logged_in_user_id
+    else:
+        util.check_user_is_editor(logged_in_user_id, tree)
+        created_by = logged_in_user_id
+        owner_id = local_tree.owner
+
+    util.check_4_dates(request.date_of_birth_from, request.date_of_birth_to, request.date_of_death_from,
+                       request.date_of_death_to)
+
+    date_of_birth_from = ""
+    date_of_birth_to = ""
+    date_of_death_from = ""
+    date_of_death_to = ""
+
+    count_birth = 0
+    count_death = 0
+
+    if request.date_of_birth_from:
+        util.check_date(request.date_of_birth_from)
+        date_of_birth_from = helper.get_date(request.date_of_birth_from)
+        count_birth += 1
+
+    if request.date_of_birth_to:
+        util.check_date(request.date_of_birth_to)
+        date_of_birth_to = helper.get_date(request.date_of_birth_to)
+        count_birth += 1
+
+    if request.date_of_death_from:
+        util.check_date(request.date_of_death_from)
+        date_of_death_from = helper.get_date(request.date_of_death_from)
+        count_death += 1
+
+    if request.date_of_death_to:
+        util.check_date(request.date_of_death_to)
+        date_of_death_to = helper.get_date(request.date_of_death_to)
+        count_death += 1
+
+    if count_birth == 1:
+        if len(date_of_birth_from) > 1:
+            date_of_birth_to = date_of_birth_from
+        else:
+            date_of_birth_from = date_of_birth_to
+
+    if count_death == 1:
+        if len(date_of_death_from) > 1:
+            date_of_death_to = date_of_death_from
+        else:
+            date_of_death_from = date_of_death_to
+
+    if count_death > 0 and count_birth > 0:
+        util.compare_dates(date_of_birth_to, date_of_death_from)
+
+    if count_death > 0:
+        is_life = False
+
+
+
+    mother_id = local_person.mother_id
+    father_id = local_person.father_id
+
+    date_person_born = helper.get_date(date_of_birth_to)
+
+    mother_born = helper.get_person_born_date(mother_id, db)
+    date_mother_born = helper.get_date(mother_born)
+    util.compare_dates(date_person_born, date_mother_born)
+
+    father_born = helper.get_person_born_date(father_id, db)
+    date_father_born = helper.get_date(father_born)
+    util.compare_dates(date_person_born, date_father_born)
+
+    li = list(local_person.children_ids.split(","))
+
+    for child in li:
+        if child:
+            child_born = helper.get_person_born_date(int(child), db)
+            date_child_born = helper.get_date(child_born)
+            util.compare_dates(date_child_born, date_person_born)
+
+    #UPDATE NEO4J NAME!!!
+
+    person.update({
+        'name': request.name,
+        'second_name': request.second_name,
+        'father_name': request.father_name,
+        'date_of_birth_from': date_of_birth_from,
+        'date_of_birth_to': date_of_birth_to,
+        'date_of_death_from': date_of_death_from,
+        'date_of_death_to': date_of_death_to,
+        'is_active': is_life,
+        'note': request.note,
+        'location': request.location,
+        'note_markdown': request.note_markdown,
+        'image': request.image,
     })
     db.commit()
     return {'msg': 'Done!!!'}
@@ -59,6 +186,8 @@ def create(request: schemas.PersonCreate, db: Session, current_user_email: str, 
 
     owner_id = ""
     created_by = ""
+    is_life = request.is_active
+
     local_tree = tree.first()
 
     if helper.check_owner_of_tree(logged_in_user_id, tree):
@@ -111,11 +240,12 @@ def create(request: schemas.PersonCreate, db: Session, current_user_email: str, 
         else:
             date_of_death_from = date_of_death_to
 
-    if count_death > 0 and count_death > 0:
+    if count_death > 0 and count_birth > 0:
         util.compare_dates(date_of_birth_to, date_of_death_from)
 
+    if count_death > 0:
+        is_life = False
 
-    #NEO4J!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     is_male = True
     if request.sex == "female":
         is_male = False
@@ -135,7 +265,7 @@ def create(request: schemas.PersonCreate, db: Session, current_user_email: str, 
         date_of_birth_to = date_of_birth_to,
         date_of_death_from = date_of_death_from,
         date_of_death_to = date_of_death_to,
-        is_active = request.is_active,
+        is_active = is_life,
         location = request.location,
         note = request.note,
         note_markdown = request.note_markdown,

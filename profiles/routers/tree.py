@@ -13,6 +13,7 @@ router = APIRouter(
 
 get_db = db.get_db
 
+get_neo4j = db.get_neo4j()
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
 def create(request: schemas.Tree, db: Session = Depends(get_db),
@@ -27,7 +28,7 @@ def all(db: Session = Depends(get_db), current_user_email: str = Depends(oauth2.
 
 @router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def desroy(id, db: Session = Depends(get_db), current_user_email: str = Depends(oauth2.get_current_user)):
-    return tree.destroy(id, current_user_email, db)
+    return tree.destroy(id, current_user_email, db, get_neo4j)
 
 @router.put('/{id}', status_code=status.HTTP_202_ACCEPTED)
 def update(id, request: schemas.TreePut, db: Session = Depends(get_db), current_user_email: str = Depends(oauth2.get_current_user)):

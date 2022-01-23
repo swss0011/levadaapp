@@ -100,6 +100,31 @@ def check_user_is_editor(id: str, tree: Query):
     if not res:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'User can not edit the tree (name = {local_tree.name})')
 
+def can_delete_node(owner,editor, tree: Query):
+    local_tree = tree.first()
+
+    if not owner and not editor:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'User can not delete the tree Nodes (name = {local_tree.name})')
+
+def can_reader_nodes(owner,editor,reader, tree: Query):
+    local_tree = tree.first()
+
+    if not owner and not editor and not reader:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'User can not read the tree Nodes (name = {local_tree.name})')
+
+def check_user_is_reader(id: str, tree: Query):
+    local_tree = tree.first()
+
+    li = list(local_tree.readers.split(","))
+
+    res = find_in_list(li, id)
+    if not res:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'User can not read the tree (name = {local_tree.name})')
+
+def person_not_found(beginingOfSentence: str, person: Query, id: str):
+    if not person.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'{beginingOfSentence} with id {id} not found')
+
 def find_in_rw(li, id: str):
     return id in li
 

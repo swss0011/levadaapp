@@ -130,6 +130,20 @@ class Human(BaseModel):
     born_at: str
     dead_at: Optional[str] = ""
 
+class PersonUpdate(BaseModel):
+    name: str
+    second_name: Optional[str] = ""
+    father_name: Optional[str] = ""
+    date_of_birth_from: str
+    date_of_birth_to: str
+    date_of_death_from: Optional[str] = ""
+    date_of_death_to: Optional[str] = ""
+    is_active: Optional[bool] = True
+    note: Optional[str] = ""
+    location: str
+    note_markdown: Optional[str] = ""
+    image: Optional[str] = ""
+
 class Person(BaseModel):
     owner_id: str
     tree_id: str

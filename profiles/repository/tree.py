@@ -22,7 +22,7 @@ def show(current_user_email: str, db: Session):
     return tree.all()
 
 
-def destroy(id, current_user_email: str, db: Session):
+def destroy(id, current_user_email: str, db: Session, get_neo4j):
     user = util.get_loginned_user(db, current_user_email)
     lined_user_id = user.id
 
@@ -30,6 +30,14 @@ def destroy(id, current_user_email: str, db: Session):
 
     tree = db.query(models.TreeDb).filter(models.TreeDb.id == id, models.TreeDb.owner == lined_user_id)
     util.tree_not_found("Tree", tree, id)
+
+    persons = db.query(models.Person).filter(models.Person.tree_id == id)
+
+    locale_persons = persons.all()
+
+    for per in locale_persons:
+        person = db.query(models.Person).filter(models.Person.id == per.id)
+        helper.delete_person(person, per, get_neo4j, db)
 
     tree.delete(synchronize_session=False)
     db.commit()
