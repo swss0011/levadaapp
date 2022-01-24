@@ -24,3 +24,7 @@ NOTES:
 MATCH (p:Person) where ID(p)=1
 OPTIONAL MATCH (p)-[r]-() //drops p's relations
 DELETE r,p
+
+MATCH (c:Female)
+WHERE ID(c) = 12
+SET c.name = "Charlize Theron2"

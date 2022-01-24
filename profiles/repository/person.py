@@ -54,7 +54,7 @@ def destroy(id, current_user_email: str, db: Session, get_neo4j):
     return {'msg': 'Done!!!'}
 
 
-def update(id, request: schemas.PersonUpdate, db: Session, current_user_email: str):
+def update(id, request: schemas.PersonUpdate, db: Session, current_user_email: str, get_neo4j):
     user = util.get_loginned_user(db, current_user_email)
     logged_in_user_id = user.id
 
@@ -156,6 +156,10 @@ def update(id, request: schemas.PersonUpdate, db: Session, current_user_email: s
             util.compare_dates(date_child_born, date_person_born)
 
     #UPDATE NEO4J NAME!!!
+    neo4j_new_name = f"{request.second_name} {request.name} {request.father_name}"
+    neo4j_old_name = f"{local_person.second_name} {local_person.name} {local_person.father_name}"
+    if not neo4j_new_name == neo4j_old_name:
+        get_neo4j.change_name(local_person.node_from_neo4j_id, neo4j_new_name)
 
     person.update({
         'name': request.name,

@@ -32,6 +32,28 @@ class App:
 
             return res_for_sql
 
+    def change_name(self, id, new_name):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._change_name, id, new_name
+            )
+
+    @staticmethod
+    def _change_name(tx, id, new_name):
+        query = (
+            f"MATCH (c)"
+            f"WHERE ID(c)=$id"
+            f"SET c.name=$new_name"
+        )
+
+        try:
+            result = tx.run(query, id=id, new_name=new_name)
+        # Capture any errors along with the query and data for traceability
+        except ServiceUnavailable as exception:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="{query} raised an error: \n {exception}".format(
+                                    query=query, exception=exception))
+
     def delete_person(self, id, male=True):
         with self.driver.session() as session:
             result = session.write_transaction(

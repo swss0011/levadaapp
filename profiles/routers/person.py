@@ -32,4 +32,4 @@ def desroy(id, db: Session = Depends(get_db), current_user_email: str = Depends(
 
 @router.put('/{id}', status_code=status.HTTP_202_ACCEPTED)
 def update(id, request: schemas.PersonUpdate, db: Session = Depends(get_db), current_user_email: str = Depends(oauth2.get_current_user)):
-    return person.update(id, request, db, current_user_email)
+    return person.update(id, request, db, current_user_email, get_neo4j)
