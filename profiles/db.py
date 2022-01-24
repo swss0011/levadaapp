@@ -32,11 +32,203 @@ class App:
 
             return res_for_sql
 
+
+    def create_from_father_to_son(self, father_id, son_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._create_from_father_to_son, father_id, son_id
+            )
+
+    @staticmethod
+    def _create_from_father_to_son(tx, father_id, son_id):
+        query = (
+            f"MATCH(c1:Male)"
+            f"WITH c1"
+            f"MATCH(c2: Male)"
+            f"WHERE ID(c1) = $father_id AND ID(c2) = $son_id"
+            f"CREATE(c1) - [r: FROM_FATHER_TO_SON]->(c2)"
+        )
+
+        try:
+            result = tx.run(query, father_id=father_id, son_id=son_id)
+        except ServiceUnavailable as exception:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="{query} raised an error: \n {exception}".format(
+                                    query=query, exception=exception))
+
+    def delete_from_father_to_son(self, father_id, son_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._delete_from_father_to_son, father_id, son_id
+            )
+
+    @staticmethod
+    def _delete_from_father_to_son(tx, father_id, son_id):
+        query = (
+            f"MATCH(c1:Male)"
+            f"WITH c1"
+            f"MATCH(c2: Male)"
+            f"WHERE ID(c1) = $father_id AND ID(c2) = $son_id"
+            f"MATCH (c1) - [r: FROM_FATHER_TO_SON]->(c2)"
+            f"DELETE r"
+        )
+
+        try:
+            result = tx.run(query, father_id=father_id, son_id=son_id)
+        except ServiceUnavailable as exception:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="{query} raised an error: \n {exception}".format(
+                                    query=query, exception=exception))
+
+    def create_from_father_to_daughter(self, father_id, daughter_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._create_from_father_to_daughter, father_id, daughter_id
+            )
+
+    @staticmethod
+    def _create_from_father_to_daughter(tx, father_id, daughter_id):
+        query = (
+            f"MATCH(c1:Male)"
+            f"WITH c1"
+            f"MATCH(c2: Female)"
+            f"WHERE ID(c1) = $father_id AND ID(c2) = $daughter_id"
+            f"CREATE(c1) - [r: FROM_FATHER_TO_DAUGHTER]->(c2)"
+        )
+
+        try:
+            result = tx.run(query, father_id=father_id, daughter_id=daughter_id)
+        except ServiceUnavailable as exception:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="{query} raised an error: \n {exception}".format(
+                                    query=query, exception=exception))
+
+    def delete_from_father_to_daughter(self, father_id, daughter_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._delete_from_father_to_daughter, father_id, daughter_id
+            )
+
+    @staticmethod
+    def _delete_from_father_to_daughter(tx, father_id, daughter_id):
+        query = (
+            f"MATCH(c1:Male)"
+            f"WITH c1"
+            f"MATCH(c2: Female)"
+            f"WHERE ID(c1) = $father_id AND ID(c2) = $daughter_id"
+            f"MATCH (c1) - [r: FROM_FATHER_TO_DAUGHTER]->(c2)"
+            f"DELETE r"
+        )
+
+        try:
+            result = tx.run(query, father_id=father_id, daughter_id=daughter_id)
+        except ServiceUnavailable as exception:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="{query} raised an error: \n {exception}".format(
+                                    query=query, exception=exception))
+
+
+    def delete_from_mother_to_son(self, mother_id, son_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._delete_from_mother_to_son, mother_id, son_id
+            )
+
+    @staticmethod
+    def _delete_from_mother_to_son(tx, mother_id, son_id):
+        query = (
+            f"MATCH(c1:Female)"
+            f"WITH c1"
+            f"MATCH(c2: Male)"
+            f"WHERE ID(c1) = $mother_id AND ID(c2) = $son_id"
+            f"MATCH (c1) - [r: FROM_MOTHER_TO_SON]->(c2)"
+            f"DELETE r"
+        )
+
+        try:
+            result = tx.run(query, mother_id=mother_id, son_id=son_id)
+        except ServiceUnavailable as exception:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="{query} raised an error: \n {exception}".format(
+                                    query=query, exception=exception))
+
+    def delete_from_mother_to_daughter(self, mother_id, daughter_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._delete_from_mother_to_daughter, mother_id, daughter_id
+            )
+
+    @staticmethod
+    def _delete_from_mother_to_daughter(tx, mother_id, daughter_id):
+        query = (
+            f"MATCH(c1:Female)"
+            f"WITH c1"
+            f"MATCH(c2: Female)"
+            f"WHERE ID(c1) = $mother_id AND ID(c2) = $daughter_id"
+            f"MATCH (c1) - [r: FROM_MOTHER_TO_DAUGHTER]->(c2)"
+            f"DELETE r"
+        )
+
+        try:
+            result = tx.run(query, mother_id=mother_id, daughter_id=daughter_id)
+        except ServiceUnavailable as exception:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="{query} raised an error: \n {exception}".format(
+                                    query=query, exception=exception))
+
+
+    def create_from_mother_to_son(self, mother_id, son_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._create_from_mother_to_son, mother_id, son_id
+            )
+
+    @staticmethod
+    def _create_from_mother_to_son(tx, mother_id, son_id):
+        query = (
+            f"MATCH(c1:Female)"
+            f"WITH c1"
+            f"MATCH(c2: Male)"
+            f"WHERE ID(c1) = $mother_id AND ID(c2) = $son_id"
+            f"CREATE(c1) - [r: FROM_MOTHER_TO_SON]->(c2)"
+        )
+
+        try:
+            result = tx.run(query, mother_id=mother_id, son_id=son_id)
+        except ServiceUnavailable as exception:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="{query} raised an error: \n {exception}".format(
+                                    query=query, exception=exception))
+
+    def create_from_mother_to_daughter(self, mother_id, daughter_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._create_from_mother_to_daughter, mother_id, daughter_id
+            )
+
+    @staticmethod
+    def _create_from_mother_to_daughter(tx, mother_id, daughter_id):
+        query = (
+            f"MATCH(c1:Female)"
+            f"WITH c1"
+            f"MATCH(c2: Female)"
+            f"WHERE ID(c1) = $mother_id AND ID(c2) = $daughter_id"
+            f"CREATE(c1) - [r: FROM_MOTHER_TO_DAUGHTER]->(c2)"
+        )
+
+        try:
+            result = tx.run(query, mother_id=mother_id, daughter_id=daughter_id)
+        except ServiceUnavailable as exception:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="{query} raised an error: \n {exception}".format(
+                                    query=query, exception=exception))
+
     def change_name(self, id, new_name):
         with self.driver.session() as session:
             result = session.write_transaction(
                 self._change_name, id, new_name
             )
+
 
     @staticmethod
     def _change_name(tx, id, new_name):

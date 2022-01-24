@@ -133,6 +133,35 @@ def remove_id_from_list(children, id):
     li.remove(str(id))
     return ','.join(str(e) for e in li)
 
+def add_new_child(person: Query, id, db: Session):
+    local_person = person.first()
+    children = local_person.children_ids
+
+    li = list(children.split(","))
+    li.append(str(id))
+
+    new_children_ids =  ','.join(str(e) for e in li)
+
+    person.update({
+        'children_ids': new_children_ids,
+    })
+
+    db.commit()
+
+
+def add_mother(person: Query, id, db: Session):
+    person.update({
+        'mother_id': id,
+    })
+    db.commit()
+
+
+def delete_mother(person: Query, db: Session):
+    person.update({
+        'mother_id': 0,
+    })
+    db.commit()
+
 
 def update_tree(db: Session, request: schemas.TreePut, tree: Query):
     if hasattr(request, 'notes'):

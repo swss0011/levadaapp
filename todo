@@ -28,3 +28,16 @@ DELETE r,p
 MATCH (c:Female)
 WHERE ID(c) = 12
 SET c.name = "Charlize Theron2"
+
+MATCH (c1:Female)
+WITH c1
+MATCH (c2:Male)
+WHERE ID(c1) = 174 AND ID(c2) = 175
+CREATE (c1)-[r:FROM_MOTHER_TO_SON]->(c2)
+
+match (c:Female)
+WITH c
+match (m:Male)
+WHERE ID(c) = 174 AND ID(m) = 175
+match (c)-[r:FROM_MOTHER_TO_SON]->(m)
+delete r

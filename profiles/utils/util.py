@@ -76,6 +76,11 @@ def check_re_match(date_str):
         return True
     return valid
 
+def compare_dates_parent_child(date1, date2):
+    if time.strptime(date1, "%d.%m.%Y") > time.strptime(date2, "%d.%m.%Y"):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail=f'Child is older then Parent')
+
 def compare_dates(date1, date2):
     if time.strptime(date1, "%d.%m.%Y") > time.strptime(date2, "%d.%m.%Y"):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
@@ -100,6 +105,10 @@ def check_user_is_editor(id: str, tree: Query):
     if not res:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'User can not edit the tree (name = {local_tree.name})')
 
+def check_from_the_same_tree(from_tree_id: int, to_tree_id: int):
+    if not from_tree_id == to_tree_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Persons from different trees')
+
 def can_delete_node(owner,editor, tree: Query):
     local_tree = tree.first()
 
@@ -111,6 +120,71 @@ def can_reader_nodes(owner,editor,reader, tree: Query):
 
     if not owner and not editor and not reader:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'User can not read the tree Nodes (name = {local_tree.name})')
+
+def check_is_female(person: Query):
+    local_person = person.first()
+    sex = local_person.sex
+
+    if sex:
+        if not sex == 'female':
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Not Female')
+
+def check_is_male(person: Query):
+    local_person = person.first()
+    sex = local_person.sex
+
+    if sex:
+        if not sex == 'male':
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Not Male')
+
+def check_no_father(id: int, person: Query):
+    local_person = person.first()
+    father_id = local_person.father_id
+
+    if not father_id == id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Does not have Father mentioned')
+
+def check_no_mother(id: int, person: Query):
+    local_person = person.first()
+    mother_id = local_person.mother_id
+
+    if not mother_id == id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Does not have Mother mentioned')
+
+
+def check_has_father(person: Query):
+    local_person = person.first()
+    father_id = local_person.father_id
+
+    if father_id:
+        if father_id > 0:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Already has Father')
+
+def check_has_mother(person: Query):
+    local_person = person.first()
+    mother_id = local_person.mother_id
+
+    if mother_id:
+        if mother_id > 0:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Already has Mother')
+
+def check_has_child_in_children(id: str, person: Query):
+    local_person = person.first()
+
+    li = list(local_person.children_ids.split(","))
+
+    res = find_in_list(li, id)
+    if not res:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Does not have the child')
+
+def check_in_children(id: str, person: Query):
+    local_person = person.first()
+
+    li = list(local_person.children_ids.split(","))
+
+    res = find_in_list(li, id)
+    if res:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Already connected as child')
 
 def check_user_is_reader(id: str, tree: Query):
     local_tree = tree.first()

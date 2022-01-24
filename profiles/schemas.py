@@ -130,6 +130,10 @@ class Human(BaseModel):
     born_at: str
     dead_at: Optional[str] = ""
 
+class PersonEdge(BaseModel):
+    from_id: int
+    to_id: int
+
 class PersonUpdate(BaseModel):
     name: str
     second_name: Optional[str] = ""
