@@ -43,10 +43,10 @@ class App:
     def _create_from_father_to_son(tx, father_id, son_id):
         query = (
             f"MATCH(c1:Male)"
-            f"WITH c1"
-            f"MATCH(c2: Male)"
-            f"WHERE ID(c1) = $father_id AND ID(c2) = $son_id"
-            f"CREATE(c1) - [r: FROM_FATHER_TO_SON]->(c2)"
+            f" WITH c1"
+            f" MATCH(c2: Male)"
+            f" WHERE ID(c1) = $father_id AND ID(c2) = $son_id"
+            f" CREATE(c1) - [r: FROM_FATHER_TO_SON]->(c2)"
         )
 
         try:
@@ -66,11 +66,11 @@ class App:
     def _delete_from_father_to_son(tx, father_id, son_id):
         query = (
             f"MATCH(c1:Male)"
-            f"WITH c1"
-            f"MATCH(c2: Male)"
-            f"WHERE ID(c1) = $father_id AND ID(c2) = $son_id"
-            f"MATCH (c1) - [r: FROM_FATHER_TO_SON]->(c2)"
-            f"DELETE r"
+            f" WITH c1"
+            f" MATCH(c2: Male)"
+            f" WHERE ID(c1) = $father_id AND ID(c2) = $son_id"
+            f" MATCH (c1) - [r: FROM_FATHER_TO_SON]->(c2)"
+            f" DELETE r"
         )
 
         try:
@@ -90,10 +90,10 @@ class App:
     def _create_from_father_to_daughter(tx, father_id, daughter_id):
         query = (
             f"MATCH(c1:Male)"
-            f"WITH c1"
-            f"MATCH(c2: Female)"
-            f"WHERE ID(c1) = $father_id AND ID(c2) = $daughter_id"
-            f"CREATE(c1) - [r: FROM_FATHER_TO_DAUGHTER]->(c2)"
+            f" WITH c1"
+            f" MATCH(c2: Female)"
+            f" WHERE ID(c1) = $father_id AND ID(c2) = $daughter_id"
+            f" CREATE(c1) - [r: FROM_FATHER_TO_DAUGHTER]->(c2)"
         )
 
         try:
@@ -113,11 +113,11 @@ class App:
     def _delete_from_father_to_daughter(tx, father_id, daughter_id):
         query = (
             f"MATCH(c1:Male)"
-            f"WITH c1"
-            f"MATCH(c2: Female)"
-            f"WHERE ID(c1) = $father_id AND ID(c2) = $daughter_id"
-            f"MATCH (c1) - [r: FROM_FATHER_TO_DAUGHTER]->(c2)"
-            f"DELETE r"
+            f" WITH c1"
+            f" MATCH(c2: Female)"
+            f" WHERE ID(c1) = $father_id AND ID(c2) = $daughter_id"
+            f" MATCH (c1) - [r: FROM_FATHER_TO_DAUGHTER]->(c2)"
+            f" DELETE r"
         )
 
         try:
@@ -138,11 +138,11 @@ class App:
     def _delete_from_mother_to_son(tx, mother_id, son_id):
         query = (
             f"MATCH(c1:Female)"
-            f"WITH c1"
-            f"MATCH(c2: Male)"
-            f"WHERE ID(c1) = $mother_id AND ID(c2) = $son_id"
-            f"MATCH (c1) - [r: FROM_MOTHER_TO_SON]->(c2)"
-            f"DELETE r"
+            f" WITH c1"
+            f" MATCH(c2: Male)"
+            f" WHERE ID(c1) = $mother_id AND ID(c2) = $son_id"
+            f" MATCH (c1) - [r: FROM_MOTHER_TO_SON]->(c2)"
+            f" DELETE r"
         )
 
         try:
@@ -162,11 +162,11 @@ class App:
     def _delete_from_mother_to_daughter(tx, mother_id, daughter_id):
         query = (
             f"MATCH(c1:Female)"
-            f"WITH c1"
-            f"MATCH(c2: Female)"
-            f"WHERE ID(c1) = $mother_id AND ID(c2) = $daughter_id"
-            f"MATCH (c1) - [r: FROM_MOTHER_TO_DAUGHTER]->(c2)"
-            f"DELETE r"
+            f" WITH c1"
+            f" MATCH(c2: Female)"
+            f" WHERE ID(c1) = $mother_id AND ID(c2) = $daughter_id"
+            f" MATCH (c1) - [r: FROM_MOTHER_TO_DAUGHTER]->(c2)"
+            f" DELETE r"
         )
 
         try:
@@ -187,10 +187,10 @@ class App:
     def _create_from_mother_to_son(tx, mother_id, son_id):
         query = (
             f"MATCH(c1:Female)"
-            f"WITH c1"
-            f"MATCH(c2: Male)"
-            f"WHERE ID(c1) = $mother_id AND ID(c2) = $son_id"
-            f"CREATE(c1) - [r: FROM_MOTHER_TO_SON]->(c2)"
+            f" WITH c1"
+            f" MATCH(c2: Male)"
+            f" WHERE ID(c1) = $mother_id AND ID(c2) = $son_id"
+            f" CREATE(c1) - [r: FROM_MOTHER_TO_SON]->(c2)"
         )
 
         try:
@@ -210,10 +210,10 @@ class App:
     def _create_from_mother_to_daughter(tx, mother_id, daughter_id):
         query = (
             f"MATCH(c1:Female)"
-            f"WITH c1"
-            f"MATCH(c2: Female)"
-            f"WHERE ID(c1) = $mother_id AND ID(c2) = $daughter_id"
-            f"CREATE(c1) - [r: FROM_MOTHER_TO_DAUGHTER]->(c2)"
+            f" WITH c1"
+            f" MATCH(c2: Female)"
+            f" WHERE ID(c1) = $mother_id AND ID(c2) = $daughter_id"
+            f" CREATE(c1) - [r: FROM_MOTHER_TO_DAUGHTER]->(c2)"
         )
 
         try:
@@ -234,8 +234,8 @@ class App:
     def _change_name(tx, id, new_name):
         query = (
             f"MATCH (c)"
-            f"WHERE ID(c)=$id"
-            f"SET c.name=$new_name"
+            f" WHERE ID(c)=$id"
+            f" SET c.name=$new_name"
         )
 
         try:
@@ -257,14 +257,14 @@ class App:
         if is_male:
             query = (
                 f"MATCH (p:Male) where ID(p)=$id"
-                "OPTIONAL MATCH (p)-[r]-()"
-                "DELETE r,p"
+                " OPTIONAL MATCH (p)-[r]-()"
+                " DELETE r,p"
             )
         else:
             query = (
                 f"MATCH (p:Female) where ID(p)=$id"
-                "OPTIONAL MATCH (p)-[r]-()"
-                "DELETE r,p"
+                " OPTIONAL MATCH (p)-[r]-()"
+                " DELETE r,p"
             )
 
 
@@ -284,12 +284,12 @@ class App:
         if is_male:
             query = (
                 "CREATE (p1:Male { name: $person1_name }) "
-                "RETURN ID(p1)"
+                " RETURN ID(p1)"
             )
         else:
             query = (
                 "CREATE (p1:Female { name: $person1_name }) "
-                "RETURN ID(p1)"
+                " RETURN ID(p1)"
             )
 
         try:

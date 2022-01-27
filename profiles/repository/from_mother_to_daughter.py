@@ -15,27 +15,27 @@ def destroy(from_id, to_id, current_user_email: str, db: Session, get_neo4j):
     person_female = db.query(models.Person).filter(models.Person.id == from_id)
     util.person_not_found("Person", person_female, from_id)
 
-    person_male = db.query(models.Person).filter(models.Person.id == to_id)
-    util.person_not_found("Person", person_male, to_id)
+    person_daughter = db.query(models.Person).filter(models.Person.id == to_id)
+    util.person_not_found("Person", person_daughter, to_id)
 
     locale_person_female = person_female.first()
-    locale_person_male = person_male.first()
+    locale_person_daughter = person_daughter.first()
 
-    util.check_from_the_same_tree(locale_person_female.tree_id, locale_person_male.tree_id)
+    util.check_from_the_same_tree(locale_person_female.tree_id, locale_person_daughter.tree_id)
 
     tree = db.query(models.TreeDb).filter(models.TreeDb.id == locale_person_female.tree_id)
     util.tree_not_found("Tree", tree, locale_person_female.tree_id)
 
-    util.check_has_child_in_children(locale_person_male.id, person_female)
+    util.check_has_child_in_children(locale_person_daughter.id, person_female)
 
-    util.check_no_mother(int(from_id), person_male)
+    util.check_no_mother(int(from_id), person_daughter)
 
-    get_neo4j.delete_from_mother_to_son(locale_person_female.node_from_neo4j_id, locale_person_male.node_from_neo4j_id)
+    get_neo4j.delete_from_mother_to_daughter(locale_person_female.node_from_neo4j_id, locale_person_daughter.node_from_neo4j_id)
 
 
     helper.remove_id_from_parents(to_id, from_id, db)
 
-    helper.delete_mother(person_male, db)
+    helper.delete_mother(person_daughter, db)
 
     return {'msg': 'Done!!!'}
 
@@ -49,31 +49,31 @@ def create(request: schemas.PersonEdge, db: Session, current_user_email: str, ge
     person_female = db.query(models.Person).filter(models.Person.id == request.from_id)
     util.person_not_found("Person", person_female, request.from_id)
 
-    person_male = db.query(models.Person).filter(models.Person.id == request.to_id)
-    util.person_not_found("Person", person_male, request.to_id)
+    person_daughter = db.query(models.Person).filter(models.Person.id == request.to_id)
+    util.person_not_found("Person", person_daughter, request.to_id)
 
     util.check_is_female(person_female)
 
-    util.check_is_male(person_male)
+    util.check_is_female(person_daughter)
 
     locale_person_female = person_female.first()
-    locale_person_male = person_male.first()
+    locale_person_daughter = person_daughter.first()
 
-    util.check_from_the_same_tree(locale_person_female.tree_id, locale_person_male.tree_id)
+    util.check_from_the_same_tree(locale_person_female.tree_id, locale_person_daughter.tree_id)
 
     tree = db.query(models.TreeDb).filter(models.TreeDb.id == locale_person_female.tree_id)
     util.tree_not_found("Tree", tree, locale_person_female.tree_id)
 
-    util.check_in_children(locale_person_male.id, person_female)
+    util.check_in_children(locale_person_daughter.id, person_female)
 
-    util.check_has_mother(person_male)
+    util.check_has_mother(person_daughter)
 
-    util.compare_dates_parent_child(locale_person_female.date_of_birth_from, locale_person_male.date_of_birth_to)
+    util.compare_dates_parent_child(locale_person_female.date_of_birth_from, locale_person_daughter.date_of_birth_to)
 
-    get_neo4j.create_from_mother_to_son(locale_person_female.node_from_neo4j_id, locale_person_male.node_from_neo4j_id)
+    get_neo4j.create_from_mother_to_daughter(locale_person_female.node_from_neo4j_id, locale_person_daughter.node_from_neo4j_id)
 
     helper.add_new_child(person_female, request.to_id, db)
 
-    helper.add_mother(person_male, request.from_id, db)
+    helper.add_mother(person_daughter, request.from_id, db)
 
     return {'msg': 'Done!!!'}

@@ -120,7 +120,7 @@ def remove_id_from_parents(id, parent_id, db: Session):
 
     new_children = remove_id_from_list(children, id)
 
-    parent.update({
+    parents_node.update({
         'children_ids': new_children
     })
 
@@ -155,10 +155,22 @@ def add_mother(person: Query, id, db: Session):
     })
     db.commit()
 
+def add_father(person: Query, id, db: Session):
+    person.update({
+        'father_id': id,
+    })
+    db.commit()
+
 
 def delete_mother(person: Query, db: Session):
     person.update({
         'mother_id': 0,
+    })
+    db.commit()
+
+def delete_father(person: Query, db: Session):
+    person.update({
+        'father_id': 0,
     })
     db.commit()
 

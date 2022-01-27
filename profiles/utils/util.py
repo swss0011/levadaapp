@@ -145,6 +145,8 @@ def check_is_male(person: Query):
     local_person = person.first()
     sex = local_person.sex
 
+    print("in check_is_male")
+
     if sex:
         if not sex == 'male':
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Not Male')
@@ -157,8 +159,13 @@ def check_no_father(id: int, person: Query):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Does not have Father mentioned')
 
 def check_no_mother(id: int, person: Query):
+    #print(f"mother id = {id}")
     local_person = person.first()
     mother_id = local_person.mother_id
+
+    #print(f"local_person.mother_id = {local_person.mother_id}")
+    #print(f"type 1 = {type(id)} type2 = {type(mother_id)}")
+    #print(f"mother_id == id ? {mother_id == id}")
 
     if not mother_id == id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Does not have Mother mentioned')
