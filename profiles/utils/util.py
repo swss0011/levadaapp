@@ -76,6 +76,18 @@ def check_re_match(date_str):
         return True
     return valid
 
+def check_email(date_str):
+    pattern = r"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"
+    date_regex = re.compile(pattern)
+    match = date_regex.search(date_str)
+    valid = False
+    if match:
+        return True
+
+    if not valid:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail=f'Please check your email address')
+
 def compare_dates_parent_child(date1, date2):
     if time.strptime(date1, "%d.%m.%Y") > time.strptime(date2, "%d.%m.%Y"):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,

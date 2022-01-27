@@ -15,6 +15,8 @@ async def create_user(request: schemas.User, db: Session):
 
     print(new_user.id)
 
+    util.check_email(request.email)
+
     await util.create_verification(db, request.email, new_user.id)
 
     return new_user
