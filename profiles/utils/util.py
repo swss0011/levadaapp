@@ -93,6 +93,11 @@ def compare_dates_parent_child(date1, date2):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail=f'Child is older then Parent')
 
+def compare_dates_from_to(date1, date2):
+    if time.strptime(date1, "%d.%m.%Y") > time.strptime(date2, "%d.%m.%Y"):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail=f'Date FROM needs to be smaller then date TO')
+
 def compare_dates(date1, date2):
     if time.strptime(date1, "%d.%m.%Y") > time.strptime(date2, "%d.%m.%Y"):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,

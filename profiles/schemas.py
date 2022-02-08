@@ -135,16 +135,16 @@ class PersonEdge(BaseModel):
     to_id: int
 
 class PersonUpdate(BaseModel):
-    name: str
+    name: Optional[str] = ""
     second_name: Optional[str] = ""
     father_name: Optional[str] = ""
-    date_of_birth_from: str
-    date_of_birth_to: str
+    date_of_birth_from: Optional[str] = ""
+    date_of_birth_to: Optional[str] = ""
     date_of_death_from: Optional[str] = ""
     date_of_death_to: Optional[str] = ""
     is_active: Optional[bool] = True
     note: Optional[str] = ""
-    location: str
+    location: Optional[str] = ""
     note_markdown: Optional[str] = ""
     image: Optional[str] = ""
 
@@ -178,7 +178,7 @@ class PersonCreate(BaseModel):
     second_name: Optional[str] = ""
     father_name: Optional[str] = ""
     date_of_birth_from: str
-    date_of_birth_to: str
+    date_of_birth_to: Optional[str] = ""
     date_of_death_from: Optional[str] = ""
     date_of_death_to: Optional[str] = ""
     is_active: Optional[bool] = True

@@ -89,13 +89,45 @@ def update(id, request: schemas.PersonUpdate, db: Session, current_user_email: s
         created_by = logged_in_user_id
         owner_id = local_tree.owner
 
-    util.check_4_dates(request.date_of_birth_from, request.date_of_birth_to, request.date_of_death_from,
-                       request.date_of_death_to)
+    #util.check_4_dates(request.date_of_birth_from, request.date_of_birth_to, request.date_of_death_from, request.date_of_death_to)
 
-    date_of_birth_from = ""
-    date_of_birth_to = ""
-    date_of_death_from = ""
-    date_of_death_to = ""
+    name = local_person.name
+    location = local_person.location
+
+    is_active_db = local_person.is_active
+
+    second_name = local_person.second_name
+    father_name = local_person.father_name
+
+    note = local_person.note
+    note_markdown = local_person.note_markdown
+    image = local_person.image
+
+    if len(request.name) > 0:
+        name = request.name
+
+    if len(request.location) > 0:
+        location = request.location
+
+    if len(request.second_name) > 0:
+        second_name = request.second_name
+
+    if len(request.father_name) > 0:
+        father_name = request.father_name
+
+    if len(request.note) > 0:
+        note = request.note
+
+    if len(request.note_markdown) > 0:
+        note_markdown = request.note_markdown
+
+    if len(request.image) > 0:
+        image = request.image
+
+    date_of_birth_from = local_person.date_of_birth_from
+    date_of_birth_to = local_person.date_of_birth_to
+    date_of_death_from = local_person.date_of_death_from
+    date_of_death_to = local_person.date_of_death_to
 
     count_birth = 0
     count_death = 0
@@ -110,6 +142,8 @@ def update(id, request: schemas.PersonUpdate, db: Session, current_user_email: s
         date_of_birth_to = helper.get_date(request.date_of_birth_to)
         count_birth += 1
 
+    is_death_from = True
+
     if request.date_of_death_from:
         util.check_date(request.date_of_death_from)
         date_of_death_from = helper.get_date(request.date_of_death_from)
@@ -119,39 +153,43 @@ def update(id, request: schemas.PersonUpdate, db: Session, current_user_email: s
         util.check_date(request.date_of_death_to)
         date_of_death_to = helper.get_date(request.date_of_death_to)
         count_death += 1
-
-    if count_birth == 1:
-        if len(date_of_birth_from) > 1:
-            date_of_birth_to = date_of_birth_from
-        else:
-            date_of_birth_from = date_of_birth_to
+        is_death_from = False
 
     if count_death == 1:
-        if len(date_of_death_from) > 1:
-            date_of_death_to = date_of_death_from
-        else:
-            date_of_death_from = date_of_death_to
+        if is_death_from:
+            if len(date_of_death_to) == 0:
+                date_of_death_to = date_of_death_from
+        if not is_death_from:
+            if len(date_of_death_from) == 0:
+                date_of_death_from = date_of_death_to
 
-    if count_death > 0 and count_birth > 0:
-        util.compare_dates(date_of_birth_to, date_of_death_from)
+    if count_birth > 0:
+        util.compare_dates_from_to(date_of_birth_from, date_of_birth_to)
 
     if count_death > 0:
+        util.compare_dates_from_to(date_of_death_from, date_of_death_to)
+
+    if len(date_of_death_from) > 0 and count_birth > 0:
+        util.compare_dates(date_of_birth_to, date_of_death_from)
+
+    if len(date_of_death_from) > 0:
         is_life = False
 
 
 
     mother_id = local_person.mother_id
     father_id = local_person.father_id
-
     date_person_born = helper.get_date(date_of_birth_to)
 
-    mother_born = helper.get_person_born_date(mother_id, db)
-    date_mother_born = helper.get_date(mother_born)
-    util.compare_dates(date_person_born, date_mother_born)
-
-    father_born = helper.get_person_born_date(father_id, db)
-    date_father_born = helper.get_date(father_born)
-    util.compare_dates(date_person_born, date_father_born)
+    if mother_id > 0 or father_id > 0:
+        if mother_id > 0:
+            mother_born = helper.get_person_born_date(mother_id, db)
+            date_mother_born = helper.get_date(mother_born)
+            util.compare_dates(date_person_born, date_mother_born)
+        if father_id > 0:
+            father_born = helper.get_person_born_date(father_id, db)
+            date_father_born = helper.get_date(father_born)
+            util.compare_dates(date_person_born, date_father_born)
 
     li = list(local_person.children_ids.split(","))
 
@@ -168,18 +206,18 @@ def update(id, request: schemas.PersonUpdate, db: Session, current_user_email: s
         get_neo4j.change_name(local_person.node_from_neo4j_id, neo4j_new_name)
 
     person.update({
-        'name': request.name,
-        'second_name': request.second_name,
-        'father_name': request.father_name,
+        'name': name,
+        'second_name': second_name,
+        'father_name': father_name,
         'date_of_birth_from': date_of_birth_from,
         'date_of_birth_to': date_of_birth_to,
         'date_of_death_from': date_of_death_from,
         'date_of_death_to': date_of_death_to,
         'is_active': is_life,
         'note': request.note,
-        'location': request.location,
-        'note_markdown': request.note_markdown,
-        'image': request.image,
+        'location': location,
+        'note_markdown': note_markdown,
+        'image': image,
     })
     db.commit()
     return {'msg': 'Done!!!'}
@@ -249,6 +287,12 @@ def create(request: schemas.PersonCreate, db: Session, current_user_email: str, 
             date_of_death_to = date_of_death_from
         else:
             date_of_death_from = date_of_death_to
+
+    if count_birth == 2:
+        util.compare_dates_from_to(date_of_birth_from, date_of_birth_to)
+
+    if count_death == 2:
+        util.compare_dates_from_to(date_of_death_from, date_of_death_to)
 
     if count_death > 0 and count_birth > 0:
         util.compare_dates(date_of_birth_to, date_of_death_from)
