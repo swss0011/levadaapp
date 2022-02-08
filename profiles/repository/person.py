@@ -49,6 +49,12 @@ def destroy(id, current_user_email: str, db: Session, get_neo4j):
         helper.is_editor(logged_in_user_id, tree),
         tree)
 
+    is_male = True
+    if local_person.sex == "female":
+        is_male = False
+
+    get_neo4j.delete_person(local_person.node_from_neo4j_id, is_male)
+
     helper.delete_person(person, local_person, get_neo4j, db)
 
     return {'msg': 'Done!!!'}

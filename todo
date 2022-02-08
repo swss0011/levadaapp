@@ -16,6 +16,16 @@
 - if tree is deleted -> delete all tree's nodes
 - neo4j change name
 - одна дата дає помилку
+- дата народження "від" пускає старше "до"
+
+
++Edge From Mother To Son:
+ +Already connected as child
+ +Persons from different trees
++All Edges:
+    +Already connected as child
++Edge From Father To Son
+    +User can not edit the tree (name = t0000)
 
 
 

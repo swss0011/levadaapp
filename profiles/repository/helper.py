@@ -23,6 +23,17 @@ def get_date(date_str):
 
     return f"{day}.{month}.{year}"
 
+def check_rights_for_node_and_edge(logged_in_user_id, tree: Query):
+    has_rights = False
+
+    if check_owner_of_tree(logged_in_user_id, tree):
+        has_rights = True
+    else:
+        util.check_user_is_editor(logged_in_user_id, tree)
+        has_rights = True
+
+    util.check_has_rights(has_rights)
+
 def check_owner_of_tree(id: str, tree: Query):
     local_tree = tree.first()
 
@@ -62,26 +73,29 @@ def remove_id_from_choldren(id, childrens, db: Session):
 def remove_father_or_mother(child_id, parent_id, db: Session):
     child_node = db.query(models.Person).filter(models.Person.id == child_id)
 
+
     locale_child = child_node.first()
 
-    mother_id = locale_child.mother_id
-    father_id = locale_child.father_id
+    if not locale_child is None:
 
-    if mother_id == parent_id:
-        mother_id = 0
-        child_node.update({
-            'mother_id': mother_id
-        })
+        mother_id = locale_child.mother_id
+        father_id = locale_child.father_id
 
-        db.commit()
+        if mother_id == parent_id:
+            mother_id = 0
+            child_node.update({
+                'mother_id': mother_id
+            })
 
-    if father_id == parent_id:
-        father_id = 0
-        child_node.update({
-            'father_id': father_id
-        })
+            db.commit()
 
-        db.commit()
+        if father_id == parent_id:
+            father_id = 0
+            child_node.update({
+                'father_id': father_id
+            })
+
+            db.commit()
 
 
 def get_person_born_date(id, db: Session):
@@ -98,10 +112,14 @@ def delete_person(person: Query, local_person, get_neo4j, db: Session):
     get_neo4j.delete_person(str(id), is_male)
 
     mother_id = local_person.mother_id
-    remove_id_from_parents(id, mother_id, db)
+    if mother_id:
+        if mother_id > 0:
+            remove_id_from_parents(id, mother_id, db)
 
     father_id = local_person.father_id
-    remove_id_from_parents(id, father_id, db)
+    if father_id:
+        if father_id > 0:
+            remove_id_from_parents(id, father_id, db)
 
     children_ids = local_person.children_ids
     remove_id_from_choldren(id, children_ids, db)
@@ -116,21 +134,23 @@ def remove_id_from_parents(id, parent_id, db: Session):
 
     parent = parents_node.first()
 
-    children = parent.children_ids
+    if not parent is None:
+        children = parent.children_ids
 
-    new_children = remove_id_from_list(children, id)
+        new_children = remove_id_from_list(children, id)
 
-    parents_node.update({
-        'children_ids': new_children
-    })
+        parents_node.update({
+            'children_ids': new_children
+        })
 
-    db.commit()
+        db.commit()
 
 
 def remove_id_from_list(children, id):
     li = list(children.split(","))
 
-    li.remove(str(id))
+    if str(id) in li:
+        li.remove(str(id))
     return ','.join(str(e) for e in li)
 
 def add_new_child(person: Query, id, db: Session):

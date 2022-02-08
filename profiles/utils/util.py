@@ -117,6 +117,10 @@ def check_user_is_editor(id: str, tree: Query):
     if not res:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'User can not edit the tree (name = {local_tree.name})')
 
+def check_has_rights(has_rights):
+    if not has_rights:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Does not have rights to perform changes')
+
 def check_from_the_same_tree(from_tree_id: int, to_tree_id: int):
     if not from_tree_id == to_tree_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Persons from different trees')

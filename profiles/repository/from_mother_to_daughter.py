@@ -26,6 +26,8 @@ def destroy(from_id, to_id, current_user_email: str, db: Session, get_neo4j):
     tree = db.query(models.TreeDb).filter(models.TreeDb.id == locale_person_female.tree_id)
     util.tree_not_found("Tree", tree, locale_person_female.tree_id)
 
+    helper.check_rights_for_node_and_edge(logged_in_user_id, tree)
+
     util.check_has_child_in_children(locale_person_daughter.id, person_female)
 
     util.check_no_mother(int(from_id), person_daughter)
@@ -63,6 +65,8 @@ def create(request: schemas.PersonEdge, db: Session, current_user_email: str, ge
 
     tree = db.query(models.TreeDb).filter(models.TreeDb.id == locale_person_female.tree_id)
     util.tree_not_found("Tree", tree, locale_person_female.tree_id)
+
+    helper.check_rights_for_node_and_edge(logged_in_user_id, tree)
 
     util.check_in_children(locale_person_daughter.id, person_female)
 

@@ -37,6 +37,13 @@ def destroy(id, current_user_email: str, db: Session, get_neo4j):
 
     for per in locale_persons:
         person = db.query(models.Person).filter(models.Person.id == per.id)
+        local_person = person.first()
+
+        is_male = True
+        if local_person.sex == "female":
+            is_male = False
+        get_neo4j.delete_person(local_person.node_from_neo4j_id, is_male)
+
         helper.delete_person(person, per, get_neo4j, db)
 
     tree.delete(synchronize_session=False)
