@@ -18,6 +18,13 @@ class User(BaseModel):
     password: str
 
 
+class UserSingUp(BaseModel):
+    username: str
+    email: str
+    password: str
+    second_password: str
+
+
 class UserPass(BaseModel):
     password: str
 

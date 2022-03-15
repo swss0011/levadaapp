@@ -7,6 +7,7 @@ from neo4j import GraphDatabase
 import logging
 from neo4j.exceptions import ServiceUnavailable
 from fastapi import status, HTTPException
+from dotenv import dotenv_values
 
 class App:
 
@@ -307,9 +308,11 @@ config_credentials = dotenv_values(".env")
 print("Starting database...")
 config.DATABASE_URL = 'bolt://neo4j:123456@127.0.0.1:7687'
 
-DB_URL = 'sqlite:///./profile.db'
+config_credentials = dotenv_values(".env")
 
-engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
+DB_URL = "postgresql://" + config_credentials["POSTGRES_USER"] + ":" + config_credentials["POSTGRES_PASSWORD"] + "@frankfurt-postgres.render.com/mypostgres" #'sqlite:///./profile.db'
+
+engine = create_engine(DB_URL) #, connect_args={"check_same_thread": False})
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 

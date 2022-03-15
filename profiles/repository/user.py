@@ -3,7 +3,9 @@ from sqlalchemy.orm import Session
 from profiles.utils import util
 from profiles.hashing import Hash
 
-async def create_user(request: schemas.User, db: Session):
+async def create_user(request: schemas.UserSingUp, db: Session):
+    util.verify_passwords(request.password, request.second_password)
+
     user = db.query(models.User).filter(models.User.email == request.email)
 
     util.check_user_exists(user, request.email)

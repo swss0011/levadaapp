@@ -93,6 +93,12 @@ def compare_dates_parent_child(date1, date2):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail=f'Child is older then Parent')
 
+
+def verify_passwords(pass1: str, pass2: str):
+    if pass1 != pass2:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f'Password does not match')
+
+
 def compare_dates_from_to(date1, date2):
     if time.strptime(date1, "%d.%m.%Y") > time.strptime(date2, "%d.%m.%Y"):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
