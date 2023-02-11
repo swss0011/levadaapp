@@ -54,8 +54,16 @@ def node_info_not_found(beginingOfSentence: str, nodeInfo: Query, id: str):
 
 
 def check_user_not_found(user: Query):
-    if not user.first():
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Invalid Credentials')
+    #print(user)
+    #print('--------')
+    #print(user.first())
+    try:
+        if not user.first():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Invalid Credentials')
+    except Exception as ex:
+        print(ex)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Server: {ex}')
+
 
 
 def check_user_not_found_in_email_verification(user: Query):

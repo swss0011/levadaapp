@@ -310,7 +310,7 @@ config.DATABASE_URL = 'bolt://neo4j:123456@127.0.0.1:7687'
 
 config_credentials = dotenv_values(".env")
 
-DB_URL = "postgresql://" + config_credentials["POSTGRES_USER"] + ":" + config_credentials["POSTGRES_PASSWORD"] + "@frankfurt-postgres.render.com/mypostgres" #'sqlite:///./profile.db'
+DB_URL = "postgresql://" + config_credentials["POSTGRES_USER"] + ":" + config_credentials["POSTGRES_PASSWORD"] + "@frankfurt-postgres.render.com/mypostgres_ngz4" #'sqlite:///./profile.db'
 
 engine = create_engine(DB_URL) #, connect_args={"check_same_thread": False})
 
