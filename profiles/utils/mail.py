@@ -7,8 +7,8 @@ from typing import List
 
 
 #
-verify_url = 'https://postaty.top/login/verifyemail/'
-change_password_url = 'https://postaty.top/user/changepasword/'
+verify_url = 'https://levada-server.onrender.com/login/verifyemail/'
+change_password_url = 'https://levada-server.onrender.com/user/changepasword/'
 
 config_credentials = dotenv_values(".env")
 #"smtp-relay.sendinblue.com",
