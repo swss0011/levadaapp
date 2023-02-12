@@ -4,21 +4,21 @@ from profiles.utils import util, mail, random_code
 
 def verify_email(code: str, db: Session):
     verify = db.query(models.VerifySingUp).filter(models.VerifySingUp.code == code)
-    
+    print('---verification_not_found')
     util.verification_not_found(verify)
 
     user_id = verify.first().user_id
-
+    print('---db.query(models.User).filter')
     user = db.query(models.User).filter(models.User.id == user_id)
-
+    print('---check_user_not_found_in_email_verification')
     util.check_user_not_found_in_email_verification(user)
-
+    print('---timestring')
     timestring = verify.first().created_at
 
     util.check_expiration(timestring)
 
     username = user.first().username
-
+    print('---user.update')
     user.update({'is_verified': True})
     db.commit()
 
