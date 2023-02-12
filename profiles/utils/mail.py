@@ -3,11 +3,13 @@ import json
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from dotenv import dotenv_values
 from typing import List
+from jinja2 import Environment, select_autoescape, PackageLoader
+from fastapi.templating import Jinja2Templates
 
 
 #
-verify_url = 'https://postaty.top/login/verifyemail/'
-change_password_url = 'https://postaty.top/user/changepasword/'
+verify_url = 'https://levada-server.onrender.com/login/verifyemail/'
+change_password_url = 'https://levada-server.onrender.com/user/changepasword/'
 
 config_credentials = dotenv_values(".env")
 #"smtp-relay.sendinblue.com",
@@ -21,6 +23,13 @@ conf = ConnectionConfig(
     MAIL_SSL = False,
     USE_CREDENTIALS = True
 )
+"""
+env = Environment(
+    loader=PackageLoader('app', 'templates'),
+    autoescape=select_autoescape(['html', 'xml'])
+)
+"""
+
 
 
 async def send_email(email: str, linkTo: str, is_verification: bool = True):
@@ -80,6 +89,17 @@ async def send_email(email: str, linkTo: str, is_verification: bool = True):
         subject_text = "Postaty; Change Your Password"
 
     print("2---------------------------")
+    # Generate the HTML template base on the template name
+    templates = Jinja2Templates(directory="templates")
+    template = templates.TemplateResponse("verification.html", {"url": verify_url + link_to, "first_name": email, "subject": subject_text})
+    """
+     html = template.render(
+            url=verify_url + link_to,
+            first_name=email,
+            subject=subject_text
+        )
+    """
+
     message = MessageSchema(
         subject=subject_text,
         recipients=[email],  # LIST OF recipients
