@@ -851,7 +851,7 @@ async def send_email(email: str, linkTo: str, is_verification: bool = True):
     message = MessageSchema(
         subject=subject_text,
         recipients=[email],  # LIST OF recipients
-        body=template,
+        html=template,
         subtype="html"
     )
 
