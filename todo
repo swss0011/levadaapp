@@ -51,3 +51,10 @@ match (m:Male)
 WHERE ID(c) = 174 AND ID(m) = 175
 match (c)-[r:FROM_MOTHER_TO_SON]->(m)
 delete r
+
+New TO-DO things:
+1. create Tree
+2. create Node in Trees
+3. create Edge between Nodes
+4. fill out Aura DB with necessary data
+5. redirect to postify after new account verification
